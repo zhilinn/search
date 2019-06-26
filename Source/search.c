@@ -32,12 +32,8 @@ static void search_in_file(STATS* stats, OPTIONS* options, char* path) {
 
 	while ((file_char = getc(file)) != EOF) {
 		text_char = options->text[text_cursor];
-		stats->chars++;
 
-		if (options->ignore_case) {
-			file_char = to_upper(file_char);
-			text_char = to_upper(text_char);
-		}
+		stats->chars++;
 
 		if (text_char == '\0') {
 			stats->matches++;
@@ -58,6 +54,11 @@ static void search_in_file(STATS* stats, OPTIONS* options, char* path) {
 		}
 		else {
 			pos_char++;
+		}
+
+		if (options->ignore_case) {
+			file_char = to_upper(file_char);
+			text_char = to_upper(text_char);
 		}
 
 		text_cursor = text_char == file_char
