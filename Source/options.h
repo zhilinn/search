@@ -4,11 +4,11 @@
 typedef struct OPTIONS OPTIONS;
 
 struct OPTIONS {
-	bool verbose;
-	bool recursive;
-	bool print_positions;
 	bool ignore_case;
+	bool print_positions;
+	bool recursive;
 	bool show_stats;
+	bool verbose;
 	char* directory;
 	char* text;
 };
