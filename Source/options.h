@@ -8,6 +8,7 @@ struct OPTIONS {
 	bool recursive;
 	bool print_positions;
 	bool ignore_case;
+	bool show_stats;
 	char* directory;
 	char* text;
 };

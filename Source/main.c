@@ -6,6 +6,6 @@
 void main(int argc, char** argv) {
 	OPTIONS options;
 	parse_options(&options, argc, argv);
-	search_in_dir(&options, options.directory);
+	search(&options);
 	exit(EXIT_SUCCESS);
 }

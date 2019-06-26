@@ -8,6 +8,7 @@ void parse_options(OPTIONS* options, int argc, char** argv) {
 	options->recursive = false;
 	options->print_positions = false;
 	options->ignore_case = false;
+	options->show_stats = false;
 
 	int argn = 0;
 	for (int i = 1; i < argc; i++) {
@@ -18,6 +19,7 @@ void parse_options(OPTIONS* options, int argc, char** argv) {
 				case 'r': options->recursive = true; break;
 				case 'p': options->print_positions = true; break;
 				case 'i': options->ignore_case = true; break;
+				case 's': options->show_stats = true; break;
 				}
 			}
 		}
@@ -30,16 +32,16 @@ void parse_options(OPTIONS* options, int argc, char** argv) {
 	}
 
 	if (argn != 2) {
-		fprintf(
-			stderr,
+		fprintf(stderr,
 			"Usage: %s [options] <directory> <text>\n"
 			"  -v: Verbose\n"
 			"  -r: Recursive\n"
 			"  -p: Print positions\n"
 			"  -i: Ignore case\n"
+			"  -s: Show statistics\n"
 			"\n",
-			argv[0]
-		);
+			argv[0]);
+
 		exit(EXIT_FAILURE);
 	}
 }
