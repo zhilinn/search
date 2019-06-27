@@ -43,8 +43,7 @@ static void search_in_file(STATS* stats, OPTIONS* options, char* path) {
 			}
 			else {
 				printf("%s\n", path);
-				fclose(file);
-				return;
+				break;
 			}
 		}
 
