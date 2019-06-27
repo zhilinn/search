@@ -13,8 +13,8 @@ struct STATS {
 	size_t chars;
 };
 
-static void search_in_file(STATS* stats, OPTIONS* options, char* path) {
-	FILE* file = fopen(path, "r");
+static void search_in_file(STATS* stats, OPTIONS* options, char* file_path) {
+	FILE* file = fopen(file_path, "r");
 	size_t pos_line = 1;
 	size_t pos_char = 1;
 	size_t text_cursor = 0;
@@ -23,7 +23,7 @@ static void search_in_file(STATS* stats, OPTIONS* options, char* path) {
 
 	if (file == NULL) {
 		if (options->verbose) {
-			fprintf(stderr, "ERROR %s (%s)\n", path, strerror(errno));
+			fprintf(stderr, "ERROR %s (%s)\n", file_path, strerror(errno));
 		}
 		return;
 	}
@@ -39,10 +39,12 @@ static void search_in_file(STATS* stats, OPTIONS* options, char* path) {
 			stats->matches++;
 
 			if (options->print_positions) {
-				printf("%s (%Iu:%Iu)\n", path, pos_line, pos_char - text_cursor);
+				printf("%s (%Iu:%Iu)\n", file_path, pos_line, pos_char - text_cursor);
+				text_cursor = 0;
+				text_char = options->text[text_cursor];
 			}
 			else {
-				printf("%s\n", path);
+				printf("%s\n", file_path);
 				break;
 			}
 		}
@@ -68,19 +70,16 @@ static void search_in_file(STATS* stats, OPTIONS* options, char* path) {
 	fclose(file);
 }
 
-static void search_in_dir(STATS* stats, OPTIONS* options, char* path) {
-	WIN32_FIND_DATA fd;
-	HANDLE h;
-	char* full_path;
-	char* pattern;
+static void search_in_dir(STATS* stats, OPTIONS* options, char* dir_path) {
+	char path[1 << 10];
+	snprintf(path, sizeof(path), "%s\\*", dir_path);
 
-	format(&pattern, "%s\\*", path);
-	h = FindFirstFile(pattern, &fd);
-	free(pattern);
+	WIN32_FIND_DATA fd;
+	HANDLE h = FindFirstFile(path, &fd);
 
 	if (h == INVALID_HANDLE_VALUE) {
 		if (options->verbose) {
-			fprintf(stderr, "ERROR %s\n", path);
+			fprintf(stderr, "ERROR %s\n", dir_path);
 		}
 		return;
 	}
@@ -88,16 +87,16 @@ static void search_in_dir(STATS* stats, OPTIONS* options, char* path) {
 	stats->dirs++;
 
 	do {
-		format(&full_path, "%s\\%s", path, fd.cFileName);
+		snprintf(path, sizeof(path), "%s\\%s", dir_path, fd.cFileName);
+
 		if (fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
 			if (options->recursive && strcmp(fd.cFileName, ".") && strcmp(fd.cFileName, "..")) {
-				search_in_dir(stats, options, full_path);
+				search_in_dir(stats, options, path);
 			}
 		}
 		else {
-			search_in_file(stats, options, full_path);
+			search_in_file(stats, options, path);
 		}
-		free(full_path);
 	}
 	while (FindNextFile(h, &fd));
 
